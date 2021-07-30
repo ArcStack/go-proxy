@@ -4,6 +4,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/lab/go-proxy/config"
 	"github.com/lab/go-proxy/models"
+	"github.com/lab/go-proxy/service"
 	"github.com/sirupsen/logrus"
 	"github.com/unrolled/secure"
 	"net/http"
@@ -28,6 +29,11 @@ func main() {
 		Path(healthCheckRoute.Pattern).
 		Name(healthCheckRoute.Name).
 		Handler(healthCheckRoute.HandlerFunc)
+
+	r.Methods(service.ReverseToFlaskRoute.Method).
+		Path(service.ReverseToFlaskRoute.Pattern).
+		Name(service.ReverseToFlaskRoute.Name).
+		Handler(service.ReverseToFlaskRoute.HandlerFunc)
 
 	http.Handle("/", r)
 	err := http.ListenAndServe(":"+config.Port, nil)

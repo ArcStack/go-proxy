@@ -6,8 +6,8 @@ import (
 	"net/url"
 )
 
-func Reverse(w http.ResponseWriter, r *http.Request) {
-	path, err := url.Parse("https://github.com")
+func ReverseToFlask(w http.ResponseWriter, r *http.Request) {
+	path, err := url.Parse("http://0.0.0.0:5000/api")
 	if err != nil {
 		panic(err)
 		return
