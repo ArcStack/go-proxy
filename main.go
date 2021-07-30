@@ -28,6 +28,7 @@ func main() {
 		Path(healthCheckRoute.Pattern).
 		Name(healthCheckRoute.Name).
 		Handler(healthCheckRoute.HandlerFunc)
+
 	http.Handle("/", r)
 	err := http.ListenAndServe(":"+config.Port, nil)
 
