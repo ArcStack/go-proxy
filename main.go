@@ -2,22 +2,14 @@ package main
 
 import (
 	"github.com/gorilla/mux"
+	"github.com/lab/go-proxy/config"
+	"github.com/lab/go-proxy/models"
 	"github.com/sirupsen/logrus"
 	"github.com/unrolled/secure"
 	"net/http"
 )
 
-type Route struct {
-	Name         string
-	Method       string
-	Pattern      string
-	HandlerFunc  http.HandlerFunc
-	Authenticate bool
-}
-
-type Routes []Route
-
-var healthCheckRoute = Route{
+var healthCheckRoute = models.Route{
 	"HealthCheck",
 	"GET",
 	"/healthz",
@@ -28,8 +20,6 @@ var healthCheckRoute = Route{
 	false,
 }
 
-var port = "3333"
-
 func main() {
 	secureMiddleware := secure.New(secure.Options{IsDevelopment: true})
 	r := mux.NewRouter()
@@ -39,10 +29,10 @@ func main() {
 		Name(healthCheckRoute.Name).
 		Handler(healthCheckRoute.HandlerFunc)
 	http.Handle("/", r)
-	err := http.ListenAndServe(":"+port, nil)
+	err := http.ListenAndServe(":"+config.Port, nil)
 
 	if err != nil {
-		logrus.Errorln("An error occured starting HTTP listener at port " + port)
+		logrus.Errorln("An error occured starting HTTP listener at port " + config.Port)
 		logrus.Errorln("Error: " + err.Error())
 	}
 }
