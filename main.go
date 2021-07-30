@@ -11,14 +11,13 @@ import (
 )
 
 var healthCheckRoute = models.Route{
-	"HealthCheck",
-	"GET",
-	"/healthz",
-	func(writer http.ResponseWriter, r *http.Request) {
+	Name:    "HealthCheck",
+	Method:  "GET",
+	Pattern: "/healthz",
+	HandlerFunc: func(writer http.ResponseWriter, r *http.Request) {
 		writer.WriteHeader(http.StatusOK)
 		writer.Write([]byte("OK"))
 	},
-	false,
 }
 
 func main() {
@@ -39,7 +38,7 @@ func main() {
 	err := http.ListenAndServe(":"+config.Port, nil)
 
 	if err != nil {
-		logrus.Errorln("An error occured starting HTTP listener at port " + config.Port)
+		logrus.Errorln("An error occurred starting HTTP listener at port " + config.Port)
 		logrus.Errorln("Error: " + err.Error())
 	}
 }
