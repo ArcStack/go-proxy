@@ -1,22 +1,48 @@
 package main
 
 import (
+	"github.com/gorilla/mux"
+	"github.com/sirupsen/logrus"
 	"github.com/unrolled/secure"
 	"net/http"
 )
 
-var myHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	_, err := w.Write([]byte("hello world"))
-	if err != nil {
-		return
-	}
-})
+type Route struct {
+	Name         string
+	Method       string
+	Pattern      string
+	HandlerFunc  http.HandlerFunc
+	Authenticate bool
+}
+
+type Routes []Route
+
+var healthCheckRoute = Route{
+	"HealthCheck",
+	"GET",
+	"/healthz",
+	func(writer http.ResponseWriter, r *http.Request) {
+		writer.WriteHeader(http.StatusOK)
+		writer.Write([]byte("OK"))
+	},
+	false,
+}
+
+var port = "3333"
 
 func main() {
 	secureMiddleware := secure.New(secure.Options{IsDevelopment: true})
-	app := secureMiddleware.Handler(myHandler)
-	err := http.ListenAndServe("127.0.0.1:3333", app)
+	r := mux.NewRouter()
+	r.Use(secureMiddleware.Handler)
+	r.Methods(healthCheckRoute.Method).
+		Path(healthCheckRoute.Pattern).
+		Name(healthCheckRoute.Name).
+		Handler(healthCheckRoute.HandlerFunc)
+	http.Handle("/", r)
+	err := http.ListenAndServe(":"+port, nil)
+
 	if err != nil {
-		return
+		logrus.Errorln("An error occured starting HTTP listener at port " + port)
+		logrus.Errorln("Error: " + err.Error())
 	}
 }
